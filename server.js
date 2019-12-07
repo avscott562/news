@@ -39,7 +39,8 @@ db.once("open", function() {
 
 // Set up route
 app.get("/", function(req, res) {
-    res.json(path.join(__dirname, "public/index.html"));
+    // res.json(path.join(__dirname, "public/index.html"));
+    res.render("articles");
 });
 
 // Scrape all data from site
