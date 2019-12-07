@@ -1,9 +1,10 @@
 // Require Dependencies
-let express = require("express");
-let path = require("path");
-let mongoose = require("mongoose");
-let axios = require("axios");
-let cheerio = require("cheerio");
+const express = require("express");
+const path = require("path");
+const mongoose = require("mongoose");
+const axios = require("axios");
+const request = require("request");
+const cheerio = require("cheerio");
 
 // Set up the Express App
 let app = express();
@@ -22,14 +23,42 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // Setup Mongo connection
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
+let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
 
 mongoose.connect(MONGODB_URI);
+let db = mongoose.connection;
+
+db.on("error", function(error) {
+    console.log("Mongoose Error: ", error);
+});
+
+db.once("open", function() {
+    console.log("Mongoose connection successful!");
+});
 
 
 // Set up route
 app.get("/", function(req, res) {
     res.json(path.join(__dirname, "public/index.html"));
+});
+
+// Scrape all data from site
+app.get("/scrape", function(req, res) {
+    let searchURL = "https://www.oprahmag.com";
+    request(searchURL, function(error, response, html) {
+        let $ = cheerio.load(html);
+
+        $(".custom-item-title").each(function(i, element) {
+            let title = $(this).text();
+            let link = searchURL + $(this).attr("href");
+            console.log(`${title} ${link}`);
+            if (title && link) {
+                console.log(title, link);
+            }
+        });
+    });
+
+    res.send("route worked");
 });
 
 
