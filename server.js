@@ -21,6 +21,12 @@ let exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+// Setup Mongo connection
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
+
+mongoose.connect(MONGODB_URI);
+
+
 // Set up route
 app.get("/", function(req, res) {
     res.json(path.join(__dirname, "public/index.html"));
