@@ -24,39 +24,45 @@ app.set("view engine", "handlebars");
 
 // Setup Mongo connection
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
-
 mongoose.connect(MONGODB_URI);
-let db = mongoose.connection;
 
-db.on("error", function(error) {
-    console.log("Mongoose Error: ", error);
-});
+// require models
+// const db = require("./models");
 
-db.once("open", function() {
-    console.log("Mongoose connection successful!");
-});
+// db.on("error", function(error) {
+//     console.log("Mongoose Error: ", error);
+// });
+
+// db.once("open", function() {
+//     console.log("Mongoose connection successful!");
+// });
 
 
 // Set up route
 app.get("/", function(req, res) {
-    // res.json(path.join(__dirname, "public/index.html"));
-    res.render("articles");
+    
+    res.render("articles", {
+        title: "testing the router",
+        link: "http://www.google.com"
+    });
 });
 
 // Scrape all data from site
 app.get("/scrape", function(req, res) {
     let searchURL = "https://www.oprahmag.com";
-    request(searchURL, function(error, response, html) {
-        let $ = cheerio.load(html);
+    axios.get(searchURL)
+    .then(function(response) {
+        console.log(response.data.length);
+        let $ = cheerio.load(response.data);
 
-        $(".custom-item-title").each(function(i, element) {
-            let title = $(this).text();
-            let link = searchURL + $(this).attr("href");
-            console.log(`${title} ${link}`);
-            if (title && link) {
-                console.log(title, link);
-            }
-        });
+        // $(".custom-item-title").each(function(i, element) {
+        //     let title = $(this).text();
+        //     let link = searchURL + $(this).attr("href");
+        //     console.log(`${title} ${link}`);
+        //     // if (title && link) {
+        //     //     console.log(title, link);
+        //     // }
+        // });
     });
 
     res.send("route worked");
