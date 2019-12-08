@@ -49,20 +49,30 @@ app.get("/", function(req, res) {
 
 // Scrape all data from site
 app.get("/scrape", function(req, res) {
+    let scrapedData = [];
     let searchURL = "https://www.oprahmag.com";
     axios.get(searchURL)
     .then(function(response) {
-        console.log(response.data.length);
+
         let $ = cheerio.load(response.data);
 
-        // $(".custom-item-title").each(function(i, element) {
-        //     let title = $(this).text();
-        //     let link = searchURL + $(this).attr("href");
-        //     console.log(`${title} ${link}`);
-        //     // if (title && link) {
-        //     //     console.log(title, link);
-        //     // }
-        // });
+        $(".custom-item-title").each(function(i, element) {
+            let newArticle = {};
+            newArticle.title = $(this).text();
+            newArticle.link = searchURL + $(this).attr("href");
+            
+            scrapedData.push(newArticle);
+        });
+
+        let articles = [];
+
+        for (let i=0; i<20; i++) {
+            let item = scrapedData.pop(scrapedData[Math.floor(Math.random() * scrapedData.length)]);
+            articles.push(item);
+        }
+
+        console.log(articles);  
+
     });
 
     res.send("route worked");
