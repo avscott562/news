@@ -2,6 +2,18 @@ header {
     background-color: rgb(210, 240, 210);
 }
 
-h1 {
+.hero {
     min-height: 425px;
+}
+
+.hero h1 {
+    padding-top: 80px;
+}
+
+.card {
+    margin: 20px 30px;
+}
+
+.card-title {
+    padding: 10px 20px;
 }

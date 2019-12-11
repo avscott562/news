@@ -24,7 +24,7 @@ app.set("view engine", "handlebars");
 
 // Setup Mongo connection
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // require models
 // const db = require("./models");
@@ -43,7 +43,8 @@ app.get("/", function(req, res) {
     
     res.render("articles", {
         title: "testing the router",
-        link: "http://www.google.com"
+        link: "http://www.google.com",
+        sub: "testing for a sub header"
     });
 });
 
@@ -60,23 +61,48 @@ app.get("/scrape", function(req, res) {
             let newArticle = {};
             newArticle.title = $(this).text();
             newArticle.link = searchURL + $(this).attr("href");
+            newArticle.sub = getSub(newArticle.link);
+            // axios.get(newArticle.link)
+            // .then(function(results) {
+            //     // console.log(results.data);
+            //     let sub = cheerio.load(results.data);
+
+            //     newArticle.sub = sub(".content-dek").children("p").text();
+
+            // });
             
             scrapedData.push(newArticle);
         });
 
         let articles = [];
 
-        for (let i=0; i<20; i++) {
-            let item = scrapedData.pop(scrapedData[Math.floor(Math.random() * scrapedData.length)]);
+        for (let i=0; i<10; i++) {
+            // console.log(scrapedData.length);
+            let item = scrapedData.splice(Math.floor(Math.random() * scrapedData.length), 1);
             articles.push(item);
         }
 
-        console.log(articles);  
+        console.log(articles);
+        console.log("\n--------------------");  
 
     });
 
     res.send("route worked");
 });
+
+function getSub(site) {
+    axios.get(site)
+        .then(function(results) {
+            // console.log(results.data);
+            let sub = cheerio.load(results.data);
+
+           return sub(".content-dek").children("p").text();
+
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+}
 
 
 // Start our server so that it can begin listening to client requests.
