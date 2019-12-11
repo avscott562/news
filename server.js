@@ -27,7 +27,7 @@ let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // require models
-// const db = require("./models");
+const db = require("./models");
 
 // db.on("error", function(error) {
 //     console.log("Mongoose Error: ", error);
