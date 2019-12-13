@@ -26,17 +26,23 @@ app.set("view engine", "handlebars");
 // const db = require("./models");
 
 // Setup Mongo connection
-let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/news";
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
-let db = mongoose.connection();
-
-db.on("error", function(error) {
-    console.log("Mongoose Error: ", error);
+let db = process.env.MONGODB_URI || "mongodb://localhost/news";
+mongoose.connect(db, function(error) {
+    if(error) {
+        console.log(error);
+    } else {
+        console.log("Mongoose connection successful!");
+    }
 });
+// let db = mongoose.connection();
 
-db.once("open", function() {
-    console.log("Mongoose connection successful!");
-});
+// db.on("error", function(error) {
+//     console.log("Mongoose Error: ", error);
+// });
+
+// db.once("open", function() {
+//     console.log("Mongoose connection successful!");
+// });
 
 
 // Set up route
