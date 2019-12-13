@@ -28,7 +28,7 @@ app.set("view engine", "handlebars");
 // Setup Mongo connection
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/news";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
-// let db = mongoose.connection();
+let db = mongoose.connection();
 
 db.on("error", function(error) {
     console.log("Mongoose Error: ", error);
