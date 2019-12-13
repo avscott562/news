@@ -7,7 +7,7 @@ const request = require("request");
 const cheerio = require("cheerio");
 
 // Set up the Express App
-let app = express();
+const app = express();
 let PORT = process.env.PORT || 3020;
 
 app.use(express.static(__dirname + "/public"));
@@ -22,20 +22,21 @@ let exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// Setup Mongo connection
-let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
-
 // require models
-const db = require("./models");
+// const db = require("./models");
 
-// db.on("error", function(error) {
-//     console.log("Mongoose Error: ", error);
-// });
+// Setup Mongo connection
+let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/news";
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+// let db = mongoose.connection();
 
-// db.once("open", function() {
-//     console.log("Mongoose connection successful!");
-// });
+db.on("error", function(error) {
+    console.log("Mongoose Error: ", error);
+});
+
+db.once("open", function() {
+    console.log("Mongoose connection successful!");
+});
 
 
 // Set up route
