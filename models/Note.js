@@ -8,7 +8,9 @@ var NoteSchema = new Schema({
   // title of note
   title: String,
   // body of note
-  body: String
+  body: String,
+  // date note added
+  date: Date
 });
 
 // This creates our model from the above schema, using mongoose's model method

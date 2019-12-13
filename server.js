@@ -23,12 +23,12 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 // require models
-// const db = require("./models");
+const Article = require("./models/Article");
 
 // Setup Mongo connection
 let MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news";
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
-let db = mongoose.connection;
+const db = mongoose.connection;
 
 db.on("error", function(error) {
     console.log("Mongoose Error: ", error);
@@ -51,11 +51,12 @@ db.once("open", function() {
 
 // Set up route
 app.get("/", function(req, res) {
-    
-    res.render("articles", {
-        title: "testing the router",
-        link: "http://www.google.com",
-        sub: "testing for a sub header"
+    Article.find({}, function(err, art) {
+        res.render("articles", {
+            title: art.title,
+            link: art.link,
+            sub: art.sub
+        });
     });
 });
 
@@ -73,28 +74,20 @@ app.get("/scrape", function(req, res) {
             newArticle.title = $(this).text();
             newArticle.link = searchURL + $(this).attr("href");
             newArticle.sub = getSub(newArticle.link);
-            // axios.get(newArticle.link)
-            // .then(function(results) {
-            //     // console.log(results.data);
-            //     let sub = cheerio.load(results.data);
-
-            //     newArticle.sub = sub(".content-dek").children("p").text();
-
-            // });
-            
+            console.log(newArticle);
             scrapedData.push(newArticle);
         });
 
         let articles = [];
 
         for (let i=0; i<10; i++) {
-            // console.log(scrapedData.length);
             let item = scrapedData.splice(Math.floor(Math.random() * scrapedData.length), 1);
             articles.push(item);
         }
 
-        console.log(articles);
-        console.log("\n--------------------");  
+
+        // console.log(articles);
+        // console.log("\n--------------------");  
 
     });
 
@@ -105,9 +98,11 @@ function getSub(site) {
     axios.get(site)
         .then(function(results) {
             // console.log(results.data);
-            let sub = cheerio.load(results.data);
+            let $ = cheerio.load(results.data);
 
-           return sub(".content-dek").children("p").text();
+            console.log($(".content-dek").children("p").text());
+
+           return $(".content-dek").children("p").text();
 
         })
         .catch(function(err) {
